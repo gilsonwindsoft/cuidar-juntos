@@ -1,0 +1,330 @@
+<!-- // views/schedules/calendar.ejs - Visualização do calendário -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../partials/header') %>
+  <title>CuidarJuntos - Calendário</title>
+  <style>
+    /* Estilo para destacar o dia atual */
+    .calendar-day.today {
+      border: 2px solid #007bff !important;
+    }
+    
+    /* Estilo para marcações especiais */
+    .calendar-day.special-arrangement {
+      background-color: #fff3cd !important;
+    }
+    
+    /* Estilo para as células do calendário */
+    .calendar-day {
+      height: 100px;
+      padding: 8px;
+      border-radius: 5px;
+      position: relative;
+    }
+    
+    .calendar-day-header {
+      margin-bottom: 8px;
+    }
+    
+    .caregiver-tag {
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">CuidarJuntos</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Início</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/cuidadores">Cuidadores</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/calendario">Calendário</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Calendário de Cuidados</h1>
+      <div>
+        <a href="/calendario/gerar" class="btn btn-primary">
+          <i class="fas fa-sync-alt"></i> Gerar Rodízio
+        </a>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#shareModal">
+          <i class="fas fa-share-alt"></i> Compartilhar
+        </button>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <% 
+              const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                                  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            %>
+            <h3><%= monthNames[month] %> <%= year %></h3>
+          </div>
+          <div>
+            <% 
+              const prevMonth = month === 0 ? 11 : month - 1;
+              const prevYear = month === 0 ? year - 1 : year;
+              const nextMonth = month === 11 ? 0 : month + 1;
+              const nextYear = month === 11 ? year + 1 : year;
+            %>
+            <a href="/calendario?month=<%= prevMonth %>&year=<%= prevYear %>" class="btn btn-outline-secondary">
+              <i class="fas fa-chevron-left"></i> Anterior
+            </a>
+            <a href="/calendario" class="btn btn-outline-secondary">
+              Hoje
+            </a>
+            <a href="/calendario?month=<%= nextMonth %>&year=<%= nextYear %>" class="btn btn-outline-secondary">
+              Próximo <i class="fas fa-chevron-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row text-center font-weight-bold mb-2">
+          <div class="col">Dom</div>
+          <div class="col">Seg</div>
+          <div class="col">Ter</div>
+          <div class="col">Qua</div>
+          <div class="col">Qui</div>
+          <div class="col">Sex</div>
+          <div class="col">Sáb</div>
+        </div>
+        
+        <% 
+          const startOfMonth = moment().year(year).month(month).startOf('month');
+          const endOfMonth = moment().year(year).month(month).endOf('month');
+          const daysInMonth = endOfMonth.date();
+          
+          // Encontra o primeiro dia da semana (0-6, onde 0 é domingo)
+          const firstDayOfWeek = startOfMonth.day();
+          
+          // Calcula quantas semanas serão exibidas
+          const weeksToShow = Math.ceil((firstDayOfWeek + daysInMonth) / 7);
+          
+          let dayCounter = 1;
+          const today = moment().format('YYYY-MM-DD');
+          
+          // Mapa de cores para cada cuidador
+          const caregiverColors = {};
+          
+          // Cores predefinidas para os cuidadores (uma paleta de cores pastéis agradáveis)
+          const colorPalette = [
+            'e6194b50', 'f5823150', 'ffe11950', '3cb44b50', '4363d850', 
+            '911eb450', '46f0f050', 'bcf60c50', 'fabebe50', 'f032e650',
+            '008b8b50', '9a632950', 'e6beff50', 'aaffc350', '800000b0',
+            '42d4f450', '808000b0', 'bfef4550', 'f0932850', '000075b0'
+          ];
+          
+          // Extrair todos os cuidadores únicos do calendarData
+          const uniqueCaregivers = new Set();
+          Object.values(calendarData).forEach(dayData => {
+            if (dayData && dayData.caregiverName) {
+              uniqueCaregivers.add(dayData.caregiverName);
+            }
+          });
+          
+          // Atribuir cores aos cuidadores
+          [...uniqueCaregivers].forEach((caregiver, index) => {
+            caregiverColors[caregiver] = colorPalette[index % colorPalette.length];
+          });
+        %>
+        
+        <% for (let week = 0; week < weeksToShow; week++) { %>
+          <div class="row mb-3">
+            <% for (let dow = 0; dow < 7; dow++) { %>
+              <div class="col">
+                <% if ((week === 0 && dow < firstDayOfWeek) || dayCounter > daysInMonth) { %>
+                  <!-- Célula vazia -->
+                  <div class="bg-light calendar-day" style="visibility: hidden;"></div>
+                <% } else { %>
+                  <% 
+                    const currentDate = moment().year(year).month(month).date(dayCounter).format('YYYY-MM-DD');
+                    const dayData = calendarData[currentDate];
+                    const isToday = currentDate === today;
+                    let bgClass = '';
+                    
+                    if (dayData && dayData.isSpecialArrangement) {
+                      bgClass = 'special-arrangement';
+                    }
+                  %>
+                  <div class="calendar-day bg-white border <%= bgClass %> <%= isToday ? 'today' : '' %>" data-date="<%= currentDate %>">
+                    <div class="calendar-day-header d-flex justify-content-between">
+                      <span><%= dayCounter %></span>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#editDayModal" data-date="<%= currentDate %>">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </div>
+                    <% if (dayData && dayData.caregiverName) { %>
+                      <div class="caregiver-tag" style="background-color: #<%= caregiverColors[dayData.caregiverName] %>;">
+                        <%= dayData.caregiverName %>
+                      </div>
+                      <% if (dayData.notes) { %>
+                        <small class="text-muted d-block"><%= dayData.notes %></small>
+                      <% } %>
+                    <% } %>
+                  </div>
+                <% 
+                  dayCounter++;
+                %>
+              <% } %>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+    
+    <!-- Legenda de cores dos cuidadores -->
+    <div class="card mb-4">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Legenda</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <% [...uniqueCaregivers].forEach((caregiver) => { %>
+            <div class="col-md-3 mb-2">
+              <div class="d-flex align-items-center">
+                <div style="width: 20px; height: 20px; background-color: #<%= caregiverColors[caregiver] %>; margin-right: 8px; border-radius: 3px;"></div>
+                <span><%= caregiver %></span>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Editar Dia -->
+  <div class="modal fade" id="editDayModal" tabindex="-1" role="dialog" aria-labelledby="editDayModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editDayModalLabel">Editar Dia</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/calendario/atualizar-dia" method="POST">
+          <div class="modal-body">
+            <input type="hidden" id="editDate" name="date">
+            
+            <div class="form-group">
+              <label for="caregiverId">Cuidador:</label>
+              <select class="form-control" id="caregiverId" name="caregiverId">
+                <% 
+                  // Esta parte requer que os cuidadores sejam passados para a view
+                  // Você pode adicionar ao controlador:
+                  // const caregivers = await Caregiver.findAll({ where: { active: true }, order: [['name', 'ASC']] });
+                  // e passar para a view
+                %>
+                <option value="">Selecione um cuidador</option>
+                <!-- Aqui você colocaria o loop dos cuidadores -->
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="notes">Observações:</label>
+              <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="isSpecialArrangement" name="isSpecialArrangement">
+                <label class="custom-control-label" for="isSpecialArrangement">Marcação especial</label>
+                <small class="form-text text-muted">Esta é uma substituição especial fora do rodízio normal.</small>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Compartilhar -->
+  <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="shareModalLabel">Compartilhar Calendário</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/compartilhar" method="POST">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="months">Validade do link (meses):</label>
+              <select class="form-control" id="months" name="months">
+                <option value="1">1 mês</option>
+                <option value="3" selected>3 meses</option>
+                <option value="6">6 meses</option>
+                <option value="12">12 meses</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Mensagem personalizada:</label>
+              <textarea class="form-control" id="message" name="message" rows="3" placeholder="Calendário de cuidados da nossa família"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Gerar Link</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+  
+  <script>
+    // Script para preencher o modal de edição do dia
+    $('#editDayModal').on('show.bs.modal', function (event) {
+      const button = $(event.relatedTarget);
+      const date = button.data('date');
+      const modal = $(this);
+      
+      modal.find('#editDate').val(date);
+      
+      // Formatação da data para exibição
+      const formattedDate = new Date(date).toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      modal.find('.modal-title').text('Editar dia: ' + formattedDate);
+      
+      // Aqui você poderia adicionar código para buscar e preencher os dados existentes
+      // se o dia já tiver um agendamento
+    });
+  </script>
+</body>
+</html>

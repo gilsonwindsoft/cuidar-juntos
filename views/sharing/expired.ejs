@@ -1,0 +1,57 @@
+<!-- // views/sharing/expired.ejs - Página para links expirados -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CuidarJuntos - Link Expirado</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .expired-container {
+      max-width: 500px;
+      text-align: center;
+    }
+    .expired-icon {
+      font-size: 5rem;
+      color: #dc3545;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="expired-container mx-auto">
+      <div class="card">
+        <div class="card-body">
+          <div class="expired-icon">
+            <i class="fas fa-link-slash"></i>
+          </div>
+          <h2 class="mb-4">Link Expirado</h2>
+          <p class="lead"><%= message || 'Este link de compartilhamento não existe ou expirou.' %></p>
+          <p>Peça ao administrador do calendário para gerar um novo link de compartilhamento.</p>
+          <hr>
+          <p>
+            <a href="/" class="btn btn-primary">Ir para a Página Inicial</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS e dependências -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

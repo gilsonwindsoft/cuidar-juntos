@@ -1,0 +1,100 @@
+<!-- // views/index.ejs - Página inicial -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('partials/header') %>
+  <title>CuidarJuntos - Início</title>
+</head>
+<body>
+  <div class="container mt-4">
+    <div class="jumbotron">
+      <h1 class="display-4">CuidarJuntos</h1>
+      <p class="lead">Sistema de rodízio de cuidados familiares para pais idosos</p>
+      <hr class="my-4">
+      <p>Organize o calendário de cuidados, distribua responsabilidades e compartilhe com toda a família.</p>
+      <div class="d-flex">
+        <a href="/cuidadores" class="btn btn-primary mr-2">
+          <i class="fas fa-users"></i> Gerenciar Cuidadores
+        </a>
+        <a href="/calendario" class="btn btn-success mr-2">
+          <i class="fas fa-calendar-alt"></i> Visualizar Calendário
+        </a>
+        <a href="/calendario/gerar" class="btn btn-info">
+          <i class="fas fa-cog"></i> Gerar Rodízio
+        </a>
+      </div>
+    </div>
+    
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-users"></i> Cadastre os Cuidadores</h5>
+            <p class="card-text">Adicione todos os filhos responsáveis pelos cuidados.</p>
+            <a href="/cuidadores/novo" class="btn btn-outline-primary">Adicionar Cuidador</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-sync-alt"></i> Gere o Rodízio</h5>
+            <p class="card-text">O sistema criará automaticamente um calendário equilibrado de rodízio.</p>
+            <a href="/calendario/gerar" class="btn btn-outline-info">Gerar Calendário</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><i class="fas fa-share-alt"></i> Compartilhe</h5>
+            <p class="card-text">Crie um link para compartilhar o calendário via WhatsApp.</p>
+            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#shareModal">
+              Compartilhar Calendário
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Compartilhamento -->
+  <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="shareModalLabel">Compartilhar Calendário</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/compartilhar" method="POST">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="months">Validade do link (meses):</label>
+              <select class="form-control" id="months" name="months">
+                <option value="1">1 mês</option>
+                <option value="3" selected>3 meses</option>
+                <option value="6">6 meses</option>
+                <option value="12">12 meses</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Mensagem personalizada:</label>
+              <textarea class="form-control" id="message" name="message" rows="3" placeholder="Calendário de cuidados da nossa família"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Gerar Link</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <%- include('partials/footer') %>
+</body>
+</html>

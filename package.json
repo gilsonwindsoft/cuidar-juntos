@@ -1,0 +1,37 @@
+{
+    "name": "cuidar-juntos",
+    "version": "1.0.0",
+    "description": "Calendário para rodízio de cuidados com pais idosos",
+    "main": "app.js",
+    "scripts": {
+      "start": "node app.js",
+      "dev": "nodemon app.js",
+      "test": "jest"
+    },
+    "keywords": [
+      "calendário",
+      "cuidados",
+      "família",
+      "rodízio"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+      "bcryptjs": "^2.4.3",
+      "dotenv": "^16.3.1",
+      "ejs": "^3.1.9",
+      "express": "^4.18.2",
+      "express-session": "^1.17.3",
+      "method-override": "^3.0.0",
+      "moment": "^2.29.4",
+      "sequelize": "^6.33.0",
+      "sqlite3": "^5.1.6",
+      "uuid": "^9.0.1",
+      "qrcode": "^1.5.3"
+    },
+    "devDependencies": {
+      "jest": "^29.7.0",
+      "nodemon": "^3.0.1"
+    }
+  }
+  

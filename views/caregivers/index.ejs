@@ -1,0 +1,88 @@
+<!-- // views/caregivers/index.ejs - Lista de cuidadores -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../partials/header') %>
+  <title>CuidarJuntos - Cuidadores</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">CuidarJuntos</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Início</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/cuidadores">Cuidadores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendario">Calendário</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Cuidadores</h1>
+      <a href="/cuidadores/novo" class="btn btn-success">
+        <i class="fas fa-plus"></i> Novo Cuidador
+      </a>
+    </div>
+
+    <% if (caregivers.length === 0) { %>
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhum cuidador cadastrado. Adicione cuidadores para gerar o calendário de rodízio.
+      </div>
+    <% } else { %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% caregivers.forEach(caregiver => { %>
+              <tr>
+                <td><%= caregiver.name %></td>
+                <td><%= caregiver.phone || '-' %></td>
+                <td><%= caregiver.email || '-' %></td>
+                <td>
+                  <% if (caregiver.active) { %>
+                    <span class="badge badge-success">Ativo</span>
+                  <% } else { %>
+                    <span class="badge badge-secondary">Inativo</span>
+                  <% } %>
+                </td>
+                <td>
+                  <a href="/cuidadores/<%= caregiver.id %>/editar" class="btn btn-sm btn-info">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form action="/cuidadores/<%= caregiver.id %>?_method=DELETE" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cuidador?')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

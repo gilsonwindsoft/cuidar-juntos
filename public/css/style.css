@@ -1,0 +1,51 @@
+/* public/css/style.css - Estilos personalizados */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.navbar-brand {
+  font-weight: bold;
+}
+
+.calendar-day {
+  min-height: 100px;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 8px;
+}
+
+.calendar-day-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.caregiver-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  margin-bottom: 5px;
+  background-color: #e9ecef;
+}
+
+.today {
+  border: 2px solid #007bff;
+}
+
+.special-arrangement {
+  border-left: 4px solid #fd7e14;
+}
+
+.share-link-container {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+.qrcode-container {
+  text-align: center;
+  margin: 20px 0;
+}

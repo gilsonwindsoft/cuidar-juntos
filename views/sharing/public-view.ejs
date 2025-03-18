@@ -1,0 +1,194 @@
+<!-- // views/sharing/public-view.ejs - Visualização pública do calendário compartilhado -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CuidarJuntos - Calendário Compartilhado</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .calendar-container {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .calendar-day {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    .today {
+      border: 2px solid #007bff;
+      background-color: #f0f7ff;
+    }
+    .caregiver-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      margin-top: 5px;
+    }
+    .card-header {
+      background-color: #6c757d;
+      color: white;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 15px;
+      margin-bottom: 8px;
+    }
+    .color-box {
+      width: 16px;
+      height: 16px;
+      margin-right: 5px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4 mb-5">
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">CuidarJuntos</h2>
+        <p class="mb-0"><%= shareConfig.message %></p>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <p><i class="fas fa-info-circle"></i> Este é o calendário de cuidados da família.</p>
+          <p>Cada cor representa um cuidador responsável pelo dia.</p>
+        </div>
+        
+        <% 
+          // Cores predefinidas para os cuidadores (uma paleta de cores pastéis agradáveis)
+          const colorPalette = [
+            'e6194b50', 'f5823150', 'ffe11950', '3cb44b50', '4363d850', 
+            '911eb450', '46f0f050', 'bcf60c50', 'fabebe50', 'f032e650',
+            '008b8b50', '9a632950', 'e6beff50', 'aaffc350', '800000b0',
+            '42d4f450', '808000b0', 'bfef4550', 'f0932850', '000075b0'
+          ];
+          
+          // Extrair todos os cuidadores únicos do calendarByMonth
+          const uniqueCaregivers = new Set();
+          
+          Object.keys(calendarByMonth).forEach(month => {
+            const days = calendarByMonth[month].days || {};
+            Object.values(days).forEach(dayData => {
+              if (dayData && dayData.caregiverName) {
+                uniqueCaregivers.add(dayData.caregiverName);
+              }
+            });
+          });
+          
+          // Atribuir cores aos cuidadores
+          const caregiverColors = {};
+          [...uniqueCaregivers].forEach((caregiver, index) => {
+            caregiverColors[caregiver] = colorPalette[index % colorPalette.length];
+          });
+        %>
+        
+        <!-- Legenda de cores dos cuidadores -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Legenda</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex flex-wrap">
+              <% [...uniqueCaregivers].forEach((caregiver) => { %>
+                <div class="legend-item">
+                  <div class="color-box" style="background-color: #<%= caregiverColors[caregiver] %>;"></div>
+                  <span><%= caregiver %></span>
+                </div>
+              <% }); %>
+            </div>
+          </div>
+        </div>
+        
+        <% Object.keys(calendarByMonth).forEach(month => { %>
+          <div class="card mb-4">
+            <div class="card-header">
+              <h4 class="mb-0"><%= calendarByMonth[month].monthName %></h4>
+            </div>
+            <div class="card-body calendar-container">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th width="14%">Domingo</th>
+                    <th width="14%">Segunda</th>
+                    <th width="14%">Terça</th>
+                    <th width="14%">Quarta</th>
+                    <th width="14%">Quinta</th>
+                    <th width="14%">Sexta</th>
+                    <th width="14%">Sábado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% 
+                    const startOfMonth = moment(month + '-01');
+                    const endOfMonth = moment(month + '-01').endOf('month');
+                    const daysInMonth = endOfMonth.date();
+                    const firstDayOfWeek = startOfMonth.day();
+                    const weeksToShow = Math.ceil((firstDayOfWeek + daysInMonth) / 7);
+                    
+                    let dayCounter = 1;
+                    const today = moment().format('YYYY-MM-DD');
+                  %>
+                  
+                  <% for (let week = 0; week < weeksToShow; week++) { %>
+                    <tr>
+                      <% for (let dow = 0; dow < 7; dow++) { %>
+                        <td>
+                          <% if ((week === 0 && dow < firstDayOfWeek) || dayCounter > daysInMonth) { %>
+                            <!-- Célula vazia -->
+                          <% } else { %>
+                            <% 
+                              const currentDate = moment(month + '-' + dayCounter.toString().padStart(2, '0')).format('YYYY-MM-DD');
+                              const dayData = calendarByMonth[month].days[currentDate];
+                              const isToday = currentDate === today;
+                            %>
+                            <div class="calendar-day <%= isToday ? 'today' : '' %>">
+                              <div class="d-flex justify-content-between">
+                                <strong><%= dayCounter %></strong>
+                                <% if (dayData && dayData.caregiverName) { %>
+                                  <span class="caregiver-tag" style="background-color: #<%= caregiverColors[dayData.caregiverName] %>;">
+                                    <%= dayData.caregiverName %>
+                                  </span>
+                                <% } %>
+                              </div>
+                              <% if (dayData && dayData.notes) { %>
+                                <small class="text-muted d-block mt-1"><%= dayData.notes %></small>
+                              <% } %>
+                            </div>
+                          <% 
+                            dayCounter++;
+                          %>
+                        <% } %>
+                        </td>
+                      <% } %>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% }); %>
+        
+        <div class="text-muted text-center">
+          <small>Este link de compartilhamento expira em <%= moment(shareConfig.expiresAt).format('DD/MM/YYYY') %></small>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS e dependências -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

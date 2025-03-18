@@ -1,0 +1,84 @@
+<!-- // views/caregivers/create.ejs - Formulário para criar cuidador -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../partials/header') %>
+  <title>CuidarJuntos - Novo Cuidador</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">CuidarJuntos</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Início</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/cuidadores">Cuidadores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendario">Calendário</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Início</a></li>
+        <li class="breadcrumb-item"><a href="/cuidadores">Cuidadores</a></li>
+        <li class="breadcrumb-item active">Novo Cuidador</li>
+      </ol>
+    </nav>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Novo Cuidador</h2>
+      </div>
+      <div class="card-body">
+        <form action="/cuidadores" method="POST">
+          <div class="form-group">
+            <label for="name">Nome *</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Telefone</label>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="(00) 00000-0000">
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email">
+          </div>
+          
+          <div class="form-group">
+            <label for="notes">Observações</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="active" name="active" checked>
+              <label class="custom-control-label" for="active">Ativo</label>
+            </div>
+          </div>
+          
+          <div class="form-group text-right">
+            <a href="/cuidadores" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>
