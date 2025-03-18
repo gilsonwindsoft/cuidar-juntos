@@ -36,7 +36,7 @@ CuidarJuntos é um sistema de calendário para organizar rodízios de cuidados f
 
 1. Clone o repositório:
 ```
-git clone https://github.com/seu-usuario/cuidar-juntos.git
+git clone https://github.com/gilsonwindsoft/cuidar-juntos.git
 cd cuidar-juntos
 ```
 
