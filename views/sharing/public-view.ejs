@@ -14,41 +14,133 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f8f9fa;
     }
+    
     .calendar-container {
       max-width: 100%;
       overflow-x: auto;
     }
+    
     .calendar-day {
-      padding: 10px;
+      padding: 8px;
       border-radius: 4px;
       margin-bottom: 5px;
+      min-height: 60px;
     }
+    
     .today {
       border: 2px solid #007bff;
       background-color: #f0f7ff;
     }
+    
     .caregiver-tag {
       display: inline-block;
-      padding: 3px 8px;
+      padding: 2px 6px;
       border-radius: 12px;
-      font-size: 0.85em;
-      margin-top: 5px;
+      font-size: 0.75em;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
+    
     .card-header {
       background-color: #6c757d;
       color: white;
     }
+    
     .legend-item {
       display: inline-flex;
       align-items: center;
-      margin-right: 15px;
+      margin-right: 12px;
       margin-bottom: 8px;
     }
+    
     .color-box {
-      width: 16px;
+      min-width: 16px;
       height: 16px;
       margin-right: 5px;
       border-radius: 3px;
+      flex-shrink: 0;
+    }
+    
+    /* Estilos responsivos */
+    @media (max-width: 768px) {
+      .container {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+      
+      .calendar-day {
+        padding: 4px;
+        min-height: 50px;
+        font-size: 0.9em;
+      }
+      
+      th, td {
+        padding: 0.3rem !important;
+        font-size: 0.85em;
+      }
+      
+      .table th {
+        font-size: 0.75em;
+        white-space: nowrap;
+      }
+      
+      .d-flex.justify-content-between {
+        flex-direction: column;
+      }
+      
+      .caregiver-tag {
+        margin-top: 2px;
+        font-size: 0.7em;
+        padding: 1px 4px;
+      }
+    }
+    
+    /* Layout alternativo para telas muito pequenas */
+    @media (max-width: 576px) {
+      .mobile-calendar-view {
+        display: block;
+      }
+      
+      .desktop-calendar-view {
+        display: none;
+      }
+      
+      .mobile-day-item {
+        border-left: 4px solid transparent;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background-color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      
+      .mobile-day-item.today {
+        border-left-color: #007bff;
+      }
+      
+      .day-number {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-right: 8px;
+      }
+      
+      .day-name {
+        color: #6c757d;
+        font-size: 0.9em;
+      }
+    }
+    
+    @media (min-width: 577px) {
+      .mobile-calendar-view {
+        display: none;
+      }
+      
+      .desktop-calendar-view {
+        display: block;
+      }
     }
   </style>
 </head>
@@ -62,7 +154,7 @@
       <div class="card-body">
         <div class="alert alert-info">
           <p><i class="fas fa-info-circle"></i> Este é o calendário de cuidados da família.</p>
-          <p>Cada cor representa um cuidador responsável pelo dia.</p>
+          <p class="mb-0">Cada cor representa um cuidador responsável pelo dia.</p>
         </div>
         
         <% 
@@ -116,65 +208,107 @@
               <h4 class="mb-0"><%= calendarByMonth[month].monthName %></h4>
             </div>
             <div class="card-body calendar-container">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th width="14%">Domingo</th>
-                    <th width="14%">Segunda</th>
-                    <th width="14%">Terça</th>
-                    <th width="14%">Quarta</th>
-                    <th width="14%">Quinta</th>
-                    <th width="14%">Sexta</th>
-                    <th width="14%">Sábado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% 
-                    const startOfMonth = moment(month + '-01');
-                    const endOfMonth = moment(month + '-01').endOf('month');
-                    const daysInMonth = endOfMonth.date();
-                    const firstDayOfWeek = startOfMonth.day();
-                    const weeksToShow = Math.ceil((firstDayOfWeek + daysInMonth) / 7);
-                    
-                    let dayCounter = 1;
-                    const today = moment().format('YYYY-MM-DD');
-                  %>
-                  
-                  <% for (let week = 0; week < weeksToShow; week++) { %>
+              <!-- Visualização para desktop e tablets -->
+              <div class="desktop-calendar-view">
+                <table class="table table-bordered">
+                  <thead>
                     <tr>
-                      <% for (let dow = 0; dow < 7; dow++) { %>
-                        <td>
-                          <% if ((week === 0 && dow < firstDayOfWeek) || dayCounter > daysInMonth) { %>
-                            <!-- Célula vazia -->
-                          <% } else { %>
-                            <% 
-                              const currentDate = moment(month + '-' + dayCounter.toString().padStart(2, '0')).format('YYYY-MM-DD');
-                              const dayData = calendarByMonth[month].days[currentDate];
-                              const isToday = currentDate === today;
-                            %>
-                            <div class="calendar-day <%= isToday ? 'today' : '' %>">
-                              <div class="d-flex justify-content-between">
-                                <strong><%= dayCounter %></strong>
-                                <% if (dayData && dayData.caregiverName) { %>
-                                  <span class="caregiver-tag" style="background-color: #<%= caregiverColors[dayData.caregiverName] %>;">
-                                    <%= dayData.caregiverName %>
-                                  </span>
+                      <th width="14%">Dom</th>
+                      <th width="14%">Seg</th>
+                      <th width="14%">Ter</th>
+                      <th width="14%">Qua</th>
+                      <th width="14%">Qui</th>
+                      <th width="14%">Sex</th>
+                      <th width="14%">Sáb</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% 
+                      const startOfMonth = moment(month + '-01');
+                      const endOfMonth = moment(month + '-01').endOf('month');
+                      const daysInMonth = endOfMonth.date();
+                      const firstDayOfWeek = startOfMonth.day();
+                      const weeksToShow = Math.ceil((firstDayOfWeek + daysInMonth) / 7);
+                      
+                      let dayCounter = 1;
+                      const today = moment().format('YYYY-MM-DD');
+                    %>
+                    
+                    <% for (let week = 0; week < weeksToShow; week++) { %>
+                      <tr>
+                        <% for (let dow = 0; dow < 7; dow++) { %>
+                          <td>
+                            <% if ((week === 0 && dow < firstDayOfWeek) || dayCounter > daysInMonth) { %>
+                              <!-- Célula vazia -->
+                            <% } else { %>
+                              <% 
+                                const currentDate = moment(month + '-' + dayCounter.toString().padStart(2, '0')).format('YYYY-MM-DD');
+                                const dayData = calendarByMonth[month].days[currentDate];
+                                const isToday = currentDate === today;
+                              %>
+                              <div class="calendar-day <%= isToday ? 'today' : '' %>">
+                                <div class="d-flex justify-content-between">
+                                  <strong><%= dayCounter %></strong>
+                                  <% if (dayData && dayData.caregiverName) { %>
+                                    <span class="caregiver-tag" style="background-color: #<%= caregiverColors[dayData.caregiverName] %>;">
+                                      <%= dayData.caregiverName %>
+                                    </span>
+                                  <% } %>
+                                </div>
+                                <% if (dayData && dayData.notes) { %>
+                                  <small class="text-muted d-block mt-1"><%= dayData.notes %></small>
                                 <% } %>
                               </div>
-                              <% if (dayData && dayData.notes) { %>
-                                <small class="text-muted d-block mt-1"><%= dayData.notes %></small>
-                              <% } %>
-                            </div>
-                          <% 
-                            dayCounter++;
-                          %>
+                            <% 
+                              dayCounter++;
+                            %>
+                          <% } %>
+                          </td>
                         <% } %>
-                        </td>
-                      <% } %>
-                    </tr>
-                  <% } %>
-                </tbody>
-              </table>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- Visualização para dispositivos móveis muito pequenos -->
+              <div class="mobile-calendar-view">
+                <% 
+                  dayCounter = 1;
+                  const weekDays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                %>
+                
+                <% for (let i = 0; i < daysInMonth; i++) { %>
+                  <% 
+                    const dayNum = i + 1;
+                    const dayDate = moment(month + '-' + dayNum.toString().padStart(2, '0'));
+                    const currentDate = dayDate.format('YYYY-MM-DD');
+                    const dayOfWeek = dayDate.day();
+                    const dayData = calendarByMonth[month].days[currentDate];
+                    const isToday = currentDate === today;
+                  %>
+                  
+                  <div class="mobile-day-item <%= isToday ? 'today' : '' %>" 
+                       style="<% if (dayData && dayData.caregiverName) { %>border-left-color: #<%= caregiverColors[dayData.caregiverName] %>;<% } %>">
+                    <div class="d-flex align-items-center mb-1">
+                      <span class="day-number"><%= dayNum %></span>
+                      <span class="day-name"><%= weekDays[dayOfWeek] %></span>
+                    </div>
+                    
+                    <% if (dayData && dayData.caregiverName) { %>
+                      <div class="mb-1">
+                        <span class="caregiver-tag" style="background-color: #<%= caregiverColors[dayData.caregiverName] %>;">
+                          <%= dayData.caregiverName %>
+                        </span>
+                      </div>
+                    <% } %>
+                    
+                    <% if (dayData && dayData.notes) { %>
+                      <small class="text-muted d-block"><%= dayData.notes %></small>
+                    <% } %>
+                  </div>
+                <% } %>
+              </div>
             </div>
           </div>
         <% }); %>
