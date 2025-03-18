@@ -26,6 +26,12 @@ exports.calendar = async (req, res) => {
       order: [['date', 'ASC']]
     });
     
+    // Busca todos os cuidadores ativos para o modal de edição
+    const caregivers = await Caregiver.findAll({
+      where: { active: true },
+      order: [['name', 'ASC']]
+    });
+    
     // Organiza os agendamentos por data
     const calendarData = {};
     schedules.forEach(schedule => {
@@ -43,6 +49,7 @@ exports.calendar = async (req, res) => {
       year,
       startDate: startDate.format('YYYY-MM-DD'),
       endDate: endDate.format('YYYY-MM-DD'),
+      caregivers, // Passando a lista de cuidadores para a view
       moment
     });
   } catch (error) {

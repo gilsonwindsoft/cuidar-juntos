@@ -233,17 +233,13 @@
             <div class="form-group">
               <label for="caregiverId">Cuidador:</label>
               <select class="form-control" id="caregiverId" name="caregiverId">
-                <% 
-                  // Esta parte requer que os cuidadores sejam passados para a view
-                  // Você pode adicionar ao controlador:
-                  // const caregivers = await Caregiver.findAll({ where: { active: true }, order: [['name', 'ASC']] });
-                  // e passar para a view
-                %>
                 <option value="">Selecione um cuidador</option>
-                <!-- Aqui você colocaria o loop dos cuidadores -->
+                <% caregivers.forEach(caregiver => { %>
+                  <option value="<%= caregiver.id %>"><%= caregiver.name %></option>
+                <% }); %>
               </select>
             </div>
-            
+                        
             <div class="form-group">
               <label for="notes">Observações:</label>
               <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
