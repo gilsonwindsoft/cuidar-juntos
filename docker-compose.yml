@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT}:3000"
+    environment:
+      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
+      - SESSION_SECRET=${SESSION_SECRET:-cuidarjuntos}
+      - DATABASE_DIALECT=${DATABASE_DIALECT:-sqlite}
+      - DATABASE_STORAGE=${DATABASE_STORAGE:-./database.sqlite}
+    volumes:
+      - /dados/docker/cuidar-juntos:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
