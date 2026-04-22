@@ -11,7 +11,7 @@ services:
       - DATABASE_DIALECT=${DATABASE_DIALECT:-sqlite}
       - DATABASE_STORAGE=${DATABASE_STORAGE:-./database.sqlite}
     volumes:
-      - /dados/docker/cuidar-juntos:/app
+      - /dados/docker/cuidar-juntos/data:/app/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/"]
       interval: 30s

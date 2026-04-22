@@ -12,7 +12,7 @@ const schedulesRoutes = require('./src/routes/schedulesRoutes');
 const sharingRoutes = require('./src/routes/sharingRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Configurações do EJS
 app.set('view engine', 'ejs');
