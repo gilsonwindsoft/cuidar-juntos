@@ -6,7 +6,6 @@ services:
     ports:
       - "${PORT}:3000"
     environment:
-      - PORT=${PORT:-3000}
       - NODE_ENV=${NODE_ENV:-production}
       - SESSION_SECRET=${SESSION_SECRET:-cuidarjuntos}
       - DATABASE_DIALECT=${DATABASE_DIALECT:-sqlite}
